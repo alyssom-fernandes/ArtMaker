@@ -1,17 +1,18 @@
-# OS
+# Sistema
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# Editor
+# Editores
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Logs
+# Registros e temporários
 *.log
+*.tmp
 
-# Local environment files (if you ever expand this project)
-.env
-.env.local
+# Imagens de trabalho: fotos de teste e o mockup (não fazem parte do app;
+# as imagens do README ficam em docs/telas)
+Artes/

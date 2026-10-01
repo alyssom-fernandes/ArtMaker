@@ -1,2 +1,5 @@
-# Auto detect text files and perform LF normalization
+# Normaliza fim de linha (LF no repositório, mesmo vindo do Windows)
 * text=auto
+*.png binary
+*.jpg binary
+*.webp binary

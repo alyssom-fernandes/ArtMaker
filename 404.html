@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Página não encontrada | ArtMaker</title>
+<meta name="color-scheme" content="dark light">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2318181b'/%3E%3Crect x='19' y='9' width='26' height='46' rx='5' fill='none' stroke='%23fafafa' stroke-width='4'/%3E%3Cpath d='M19 21h26' stroke='%23fafafa' stroke-width='4'/%3E%3Cpath d='M27 31l7-1 5 5-7 7-5-5z' fill='%23f5b400'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&family=JetBrains+Mono:wght@700&display=swap">
+<!-- Página própria para endereço que não existe (GitHub Pages usa o 404.html
+     da raiz). Segue o tema escolhido no ArtMaker e, sem escolha, o do aparelho. -->
+<script>
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('artmaker:tema'); } catch (e) {}
+    if (t !== 'light' && t !== 'dark') t = window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+<style>
+  /* Mesma identidade do app: cinzas neutros e um destaque só, o amarelo-etiqueta, chapado */
+  :root { --bg: #0e0e10; --cartao: #17171a; --borda: #27272b; --texto: #ececef; --fraco: #a1a1aa; --acento: #f5b400; --sobre-acento: #1a1300; --foco: #f5b400; color-scheme: dark; }
+  [data-theme="light"] { --bg: #f4f4f5; --cartao: #ffffff; --borda: #e4e4e7; --texto: #18181b; --fraco: #52525b; --foco: #a06800; color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    min-height: 100vh; display: flex; flex-direction: column; background: var(--bg);
+    color: var(--texto); font-family: 'Instrument Sans', system-ui, sans-serif; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
+  }
+  .conteudo { flex: 1; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  main {
+    width: min(420px, 100%); padding: 32px 28px 22px; background: var(--cartao); border: 1px solid var(--borda); border-radius: 12px;
+    animation: entra .3s cubic-bezier(.2,0,.2,1) both;
+  }
+  .ico { width: 36px; height: 36px; margin-bottom: 22px; border-radius: 9px; display: grid; place-items: center; background: var(--texto); color: var(--cartao); }
+  .codigo { font-weight: 600; font-size: .8125rem; color: var(--fraco); margin-bottom: 6px; }
+  h1 { font-size: 1.375rem; font-weight: 650; letter-spacing: -.01em; margin-bottom: 8px; }
+  p { color: var(--fraco); margin-bottom: 24px; line-height: 1.55; font-size: .9375rem; }
+  a { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: .875rem;
+    background: var(--acento); color: var(--sobre-acento); }
+  [data-theme="light"] a { box-shadow: inset 0 0 0 1px #a06800; }          /* o amarelo puro não chega a 3:1 sobre branco */
+  a:hover { background: #ffc21a; }
+  a:focus-visible { outline: 2px solid var(--foco); outline-offset: 3px; }
+  /* Rodapé de página, padrão AFN Systems (brand guide) */
+  .page-footer { padding: 20px 36px; border-top: 1px solid var(--borda); display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .pf-marca { display: flex; align-items: baseline; }
+  .pf-afn, .pf-sys, .pf-pipe, .pf-info { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: rgba(255,255,255,.28); }
+  .pf-afn, .pf-sys { font-size: 10px; letter-spacing: 2px; }
+  .pf-afn { color: #c44a5a; -webkit-text-stroke: .3px rgba(196,74,90,.4); }
+  .pf-gap { width: 4px; display: inline-block; }
+  .pf-pipe { font-size: 13px; }
+  .pf-info { font-size: 11px; letter-spacing: .3px; }
+  [data-theme="light"] .pf-afn { color: #6b1f2a; -webkit-text-stroke: .3px rgba(107,31,42,.4); }
+  [data-theme="light"] .pf-sys, [data-theme="light"] .pf-pipe, [data-theme="light"] .pf-info { color: #505050; }
+  @media (max-width: 480px) { .page-footer { padding: 16px 18px; } }
+  @keyframes entra { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { main { animation: none; } }
+  @media (forced-colors: active) { .ico { background: CanvasText; color: Canvas; } a { border: 1px solid ButtonText; } }
+</style>
+</head>
+<body>
+  <div class="conteudo">
+    <main>
+      <div class="ico" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M6.5 7.2h11" stroke="currentColor" stroke-width="1.9"/><path d="M9.6 12.6l3.1-.5 2.4 2.4-3.1 3.1-2.4-2.4z" fill="currentColor"/></svg>
+      </div>
+      <p class="codigo">Erro 404</p>
+      <h1>Página não encontrada</h1>
+      <p>O endereço não existe ou mudou. O editor de encartes continua no mesmo lugar, com o que você deixou salvo.</p>
+      <a id="voltar" href="/ArtMaker/">Abrir o ArtMaker</a>
+    </main>
+  </div>
+  <footer class="page-footer" aria-label="AFN Systems, ArtMaker">
+    <div class="pf-marca"><span class="pf-afn">AFN</span><span class="pf-gap"></span><span class="pf-sys">SYSTEMS</span></div>
+    <span class="pf-pipe" aria-hidden="true">|</span>
+    <span class="pf-info">ArtMaker</span>
+  </footer>
+<script>
+  /* Servido fora do GitHub Pages (na raiz de um servidor local), o app fica em "/" */
+  if (!location.pathname.startsWith('/ArtMaker/')) document.getElementById('voltar').href = '/';
+</script>
+</body>
+</html>
