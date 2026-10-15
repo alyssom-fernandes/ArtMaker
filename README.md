@@ -1,20 +1,26 @@
 # ArtMaker
 
-![ArtMaker: the editor on a computer and on a phone, with the flyer inside the Status frame](docs/telas/capa.png)
+Weekly deals flyers for WhatsApp Status, made for a real grocery store in
+Brazil.
+
+![Three flyers made with ArtMaker, in red, blue and green palettes, each inside the WhatsApp Status frame on a phone](docs/telas/encartes.png)
+
+**[See the live demo](https://alyssom-fernandes.github.io/ArtMaker/?demo=1)**: a
+complete flyer with six illustrated products, where nothing is saved. Or
+[open an empty editor](https://alyssom-fernandes.github.io/ArtMaker/).
 
 ArtMaker builds promotional flyers in the WhatsApp Status and Stories
 format (1080 × 1920). It was made for the owner of Mercado Vitória, a
 grocery store in Brazil, so she could publish the week's deals on her
 own, from her phone or computer, with no designer and no paid app: she
 types the products and prices, picks the photos, and downloads or shares
-the finished flyer.
+the finished flyer. Mercado Vitória is a real store; its name and logo
+appear with the owner's permission.
 
 It is a single HTML file with plain JavaScript: no framework, no build
-step and no server. Everything stays on the user's device. The interface
+step and no server. What the user types and the photos they add stay on
+their device; only the fonts are loaded from Google Fonts. The interface
 is in Portuguese.
-
-**[Open ArtMaker](https://alyssom-fernandes.github.io/ArtMaker/)** · **[See the demo](https://alyssom-fernandes.github.io/ArtMaker/?demo=1)**, a complete
-flyer with six illustrated products, where nothing is saved.
 
 [![Tests](https://github.com/alyssom-fernandes/ArtMaker/actions/workflows/testes.yml/badge.svg)](https://github.com/alyssom-fernandes/ArtMaker/actions/workflows/testes.yml)
 ![Single file](https://img.shields.io/badge/single-file-success?style=flat-square)
@@ -37,15 +43,17 @@ This README is also available in [Portuguese](README.pt-BR.md).
 
 Taken from the demo mode.
 
+![ArtMaker: the editor on a computer and on a phone, with the flyer inside the Status frame](docs/telas/capa.png)
+
 | Editor, dark theme | Editor, light theme |
 |---|---|
 | ![Editor, dark theme](docs/telas/editor-escuro.png) | ![Editor, light theme](docs/telas/editor-claro.png) |
 | **Colors, with the palettes drawn for real** | **Style, with thumbnails drawn by the flyer's own engine** |
 | ![Colors tab](docs/telas/cores-claro.png) | ![Style tab](docs/telas/estilo-escuro.png) |
 
-| Generated flyers (PNG 1080 × 1920) | On a phone |
-|---|---|
-| <img src="docs/telas/encartes.png" alt="Three generated flyers with different palettes and styles, each on a phone inside the Status frame" width="560"> | <img src="docs/telas/celular.png" alt="ArtMaker on a phone" width="260"> |
+| On a phone |
+|---|
+| <img src="docs/telas/celular.png" alt="ArtMaker on a phone" width="260"> |
 
 ## What it does
 
@@ -125,8 +133,11 @@ Taken from the demo mode.
 ### Phone, themes and accessibility
 
 - On a computer, the preview shows the flyer inside a phone, with the
-  WhatsApp Status frame around it.
-- On a phone: the tabs, with Undo and Redo, stay pinned to the top, and a
+  WhatsApp Status frame around it, and the buttons beside it with the
+  name the file will have. Hovering over a palette shows the flyer in it;
+  a click applies it.
+- On a phone, the demo opens on the finished flyer. While editing, the
+  tabs, with Undo and Redo, stay pinned to the top, and a
   bar at the bottom shows a live thumbnail of the flyer. The preview, the
   About box and the menu open as bottom sheets that close with a swipe
   down. On the keyboard, Enter moves to the next field.
@@ -146,6 +157,7 @@ Taken from the demo mode.
 | Data | `localStorage` for state, IndexedDB for photos |
 | Sharing | Web Share API with files |
 | Fonts | Instrument Sans for the interface; Anton, Poppins and Roboto Slab for the flyer; JetBrains Mono for the signature (Google Fonts) |
+| Security | Content Security Policy in a meta tag (each inline script allowed by its SHA-256 hash), no referrer |
 | Tests | `node --test`, no dependencies, run on every push (GitHub Actions) |
 
 Some decisions behind it:
@@ -163,11 +175,19 @@ Some decisions behind it:
   adjustment, local dates, the file name, photo ids and the migration of
   data saved by older versions. The test cuts the block of pure functions
   out of `index.html` itself.
+- **The page only runs its own code.** The security policy allows each
+  inline script by its hash and, from outside, only Google Fonts. A test
+  recomputes the hashes, so changing a script without updating the policy
+  fails the build instead of breaking the live page.
 
 ## Known limitations
 
-- Fonts come from Google Fonts. Without internet on the first visit, the
-  flyer uses system fonts.
+- Fonts come from Google Fonts, so the browser contacts Google to fetch
+  them (nothing typed or uploaded goes along). Without internet on the
+  first visit, the flyer uses system fonts.
+- GitHub Pages does not allow custom headers, so the security policy is
+  set in a meta tag. That form cannot stop another site from embedding
+  the page in a frame.
 - **Compartilhar** (Share) needs HTTPS and a browser that can share files
   (Chrome on Android, Safari on iPhone). On a computer, usually only
   **Baixar** (Download) shows up.
@@ -176,7 +196,8 @@ Some decisions behind it:
 - Data stays in the device's browser. Clearing the site's data erases the
   flyer; to keep it or move it to another device, use **Salvar projeto em
   arquivo** (Save project to a file), in the menu.
-- The interface is in Portuguese only.
+- The interface is in Portuguese only. In the demo, the banner at the top
+  also says in English, on wide screens, that the data is a sample.
 
 ## Running your own copy
 
@@ -201,6 +222,7 @@ index.html            the whole app: interface, flyer drawing and the default lo
 404.html              not-found page
 tests/
   puro.test.mjs       tests for the pure functions in index.html
+  csp.test.mjs        checks that the security policy allows exactly the page's scripts
 .github/workflows/
   testes.yml          runs the tests on every push
 docs/telas/           images used in this README and the link preview (og.png)

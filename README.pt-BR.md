@@ -1,18 +1,25 @@
 # ArtMaker
 
-![ArtMaker: o editor no computador e no celular, com o encarte dentro da moldura do Status](docs/telas/capa.png)
+Encartes de ofertas da semana para o Status do WhatsApp, feitos para um
+mercado de verdade.
+
+![Três encartes feitos no ArtMaker, nas paletas vermelha, azul e verde, cada um na moldura do Status num celular](docs/telas/encartes.png)
+
+**[Ver a demonstração](https://alyssom-fernandes.github.io/ArtMaker/?demo=1)**: um
+encarte completo com seis produtos ilustrados, em que nada é salvo. Ou
+[abrir o editor vazio](https://alyssom-fernandes.github.io/ArtMaker/).
 
 O ArtMaker monta encartes de ofertas no formato do Status do WhatsApp e
 dos Stories (1080 × 1920). Foi feito para a dona do Mercado Vitória
 publicar as promoções da semana sozinha, pelo celular ou pelo computador,
 sem designer e sem aplicativo pago: ela escreve os produtos e os preços,
-escolhe as fotos e baixa ou compartilha o encarte pronto.
+escolhe as fotos e baixa ou compartilha o encarte pronto. O Mercado
+Vitória existe de verdade; o nome e a logo aparecem com a autorização da
+dona.
 
 É um arquivo HTML só, com JavaScript puro, sem framework, sem etapa de
-build e sem servidor. Tudo fica no aparelho de quem usa.
-
-**[Abrir o ArtMaker](https://alyssom-fernandes.github.io/ArtMaker/)** · **[Ver a demonstração](https://alyssom-fernandes.github.io/ArtMaker/?demo=1)**, um
-encarte completo com seis produtos ilustrados, em que nada é salvo.
+build e sem servidor. O que se digita e as fotos ficam no aparelho de
+quem usa; da internet vêm só as fontes, do Google Fonts.
 
 [![Testes](https://github.com/alyssom-fernandes/ArtMaker/actions/workflows/testes.yml/badge.svg)](https://github.com/alyssom-fernandes/ArtMaker/actions/workflows/testes.yml)
 ![Arquivo único](https://img.shields.io/badge/arquivo-%C3%BAnico-success?style=flat-square)
@@ -34,15 +41,17 @@ Este README também está em [inglês](README.md).
 
 Capturadas do modo demonstração.
 
+![ArtMaker: o editor no computador e no celular, com o encarte dentro da moldura do Status](docs/telas/capa.png)
+
 | Editor, tema escuro | Editor, tema claro |
 |---|---|
 | ![Editor no tema escuro](docs/telas/editor-escuro.png) | ![Editor no tema claro](docs/telas/editor-claro.png) |
 | **Cores, com as paletas desenhadas de verdade** | **Estilo, com miniaturas desenhadas pelo próprio motor do encarte** |
 | ![Aba Cores](docs/telas/cores-claro.png) | ![Aba Estilo](docs/telas/estilo-escuro.png) |
 
-| Encartes gerados (PNG 1080 × 1920) | No celular |
-|---|---|
-| <img src="docs/telas/encartes.png" alt="Três encartes gerados, com paletas e estilos diferentes, cada um num celular com a moldura do Status" width="560"> | <img src="docs/telas/celular.png" alt="ArtMaker no celular" width="260"> |
+| No celular |
+|---|
+| <img src="docs/telas/celular.png" alt="ArtMaker no celular" width="260"> |
 
 ## O que ele faz
 
@@ -120,8 +129,11 @@ Capturadas do modo demonstração.
 ### Celular, temas e acessibilidade
 
 - No computador, a prévia mostra o encarte dentro de um celular, com a
-  moldura do Status do WhatsApp.
-- No celular: as abas, com Desfazer e Refazer, ficam presas no topo, e
+  moldura do Status do WhatsApp, e os botões ao lado, com o nome que o
+  arquivo vai ter. Passar o mouse numa paleta mostra o encarte com ela; o
+  clique aplica.
+- No celular, a demonstração abre no encarte pronto. Na edição, as abas,
+  com Desfazer e Refazer, ficam presas no topo, e
   uma barra embaixo mostra a miniatura viva do encarte. A prévia, o Sobre
   e o menu abrem como folhas, que fecham arrastando para baixo. No
   teclado, Enter leva ao campo seguinte.
@@ -140,6 +152,7 @@ Capturadas do modo demonstração.
 | Dados | `localStorage` para o estado, IndexedDB para as fotos |
 | Compartilhar | Web Share API com arquivo |
 | Fontes | Instrument Sans na interface; Anton, Poppins e Roboto Slab no encarte; JetBrains Mono na assinatura (Google Fonts) |
+| Segurança | Content Security Policy por meta (cada script inline liberado pelo hash SHA-256), sem referrer |
 | Testes | `node --test`, sem dependências, rodando a cada envio (GitHub Actions) |
 
 Algumas decisões por trás dele:
@@ -157,11 +170,19 @@ Algumas decisões por trás dele:
   datas locais, nome do arquivo, id das fotos e a migração dos dados
   salvos por versões antigas. O teste recorta o bloco de funções puras do
   próprio `index.html`.
+- **A página só roda o próprio código.** A política de segurança libera
+  cada script inline pelo hash e, de fora, só o Google Fonts. Um teste
+  recalcula os hashes: mudar um script sem atualizar a política quebra o
+  build, e não a página no ar.
 
 ## Limitações conhecidas
 
-- As fontes vêm do Google Fonts. Sem internet na primeira abertura, o
-  encarte sai com fontes do sistema.
+- As fontes vêm do Google Fonts, então o navegador fala com o Google para
+  buscá-las (nada do que se digita ou das fotos vai junto). Sem internet
+  na primeira abertura, o encarte sai com fontes do sistema.
+- O GitHub Pages não deixa mandar cabeçalhos próprios, então a política
+  de segurança vai por meta. Desse jeito ela não impede outro site de
+  embutir a página num quadro.
 - **Compartilhar** precisa de HTTPS e de um navegador que compartilhe
   arquivos (Chrome no Android, Safari no iPhone). No computador, quase
   sempre só aparece o **Baixar**.
@@ -170,7 +191,8 @@ Algumas decisões por trás dele:
 - Os dados ficam no navegador do aparelho. Limpar os dados do site apaga
   o encarte; para guardar ou levar a outro aparelho, use **Salvar
   projeto em arquivo**, no menu.
-- A interface é só em português.
+- A interface é só em português. Na demonstração, a faixa do topo também
+  avisa em inglês, nas telas largas, que os dados são de exemplo.
 
 ## Como usar a sua cópia
 
@@ -195,6 +217,7 @@ index.html            o app inteiro: interface, desenho do encarte e a logo padr
 404.html              página de endereço não encontrado
 tests/
   puro.test.mjs       testes das funções puras do index.html
+  csp.test.mjs        confere que a política de segurança libera só os scripts da página
 .github/workflows/
   testes.yml          roda os testes a cada envio
 docs/telas/           imagens deste README e a prévia de link (og.png)
