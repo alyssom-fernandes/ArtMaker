@@ -6,7 +6,7 @@
 <!-- Segurança: só roda o que está nesta página (cada script inline entra pelo
      hash, conferido em tests/csp.test.mjs) e, de fora, só as fontes do Google.
      O GitHub Pages não deixa mandar cabeçalhos, por isso vai por meta. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-dg5HMEkhLOfeIF0LNZR+fz3n6dvJMV0VrkU4+11nZH0=' 'sha256-2b4BmTX2wfMEgaP6WSwYSj60GUU0NpKrWn/60U99STU=' 'sha256-NP14sftPEyubMi84fi6pR80PzxjUQkldg239DxpqFPU=' 'sha256-Ld8I209GTQjonK1yDwBUZG4d12TzM+rT6WhlV+O6eW4='; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src data: blob:; connect-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-6dwfToAI8snquE4xYPq1X2HdzZWQjIceF/zsA9KQFuM=' 'sha256-2b4BmTX2wfMEgaP6WSwYSj60GUU0NpKrWn/60U99STU=' 'sha256-NWxITWHY0A3Cduz6o+nhMoz/VkFAaDKvhPq7LRpJRV4=' 'sha256-Ld8I209GTQjonK1yDwBUZG4d12TzM+rT6WhlV+O6eW4='; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src data: blob:; connect-src data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>ArtMaker | Encartes de ofertas</title>
 <meta name="description" content="Monte o encarte de ofertas do mercado, veja ao vivo e baixe em PNG 1080×1920 para o Status do WhatsApp e os Stories. Um arquivo só, sem cadastro: tudo fica no seu aparelho.">
@@ -42,6 +42,8 @@
   document.documentElement.setAttribute('data-theme', t);
   var m = document.getElementById('meta-tema');
   if (m) m.content = t === 'light' ? '#ffffff' : '#17171a';
+  /* Modo demonstração: a faixa do topo já ocupa o lugar na primeira pintura */
+  if (new URLSearchParams(location.search).has('demo')) document.documentElement.setAttribute('data-demo', '');
 })();
 </script>
 
@@ -545,6 +547,12 @@ input[type="date"]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.7}
 .legenda-ir{align-self:flex-start;min-height:28px;padding:0;margin-top:2px;font-size:.8125rem}
 @media (min-width:1100px) and (min-height:520px){
   .palco{flex-direction:row;gap:clamp(36px,4.5vw,72px)}
+  /* A altura do encarte (--h) também cede à largura que sobra ao lado das
+     ações (painel, folgas, vão, coluna de 236 e bisel): sem isso, entre 1100
+     e 1200 px de largura numa tela alta, a imagem achatava. */
+  .palco{--h:min(calc((100vh - var(--faixa-h) - 108px) / 1.22),calc((100vw - var(--painel-l) - 48px - clamp(36px,4.5vw,72px) - 252px) * 16 / 9),900px);
+    --h:min(calc((100dvh - var(--faixa-h) - 108px) / 1.22),calc((100vw - var(--painel-l) - 48px - clamp(36px,4.5vw,72px) - 252px) * 16 / 9),900px)}
+  #moldura-canvas{--h:inherit}
   .palco .previa-acoes{flex-direction:column;flex-wrap:nowrap;align-items:stretch;width:236px}
   .palco .previa-acoes .btn-pri{min-width:0}
   .previa-legenda{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
@@ -653,6 +661,10 @@ kbd{font-family:var(--sans);font-size:.75rem;font-weight:500;padding:1px 6px;bor
    estado "Demonstração" */
 #faixa-demo{position:sticky;top:0;z-index:150;display:flex;align-items:center;justify-content:flex-start;gap:12px;padding:2px 16px;min-height:32px;
   background:var(--bg);color:var(--fraco);border-bottom:1px solid var(--b1);font-size:.8125rem}
+html:not([data-demo]) #faixa-demo{display:none}
+/* A altura da faixa já conta na primeira pintura; o script mede a real depois */
+html[data-demo]{--faixa-h:33px}
+@media (pointer:coarse){html[data-demo]{--faixa-h:45px}}
 #faixa-demo strong{color:var(--texto);font-weight:600}
 #faixa-demo > span:first-child::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--acento);margin-right:8px;vertical-align:2px}
 .faixa-curto{display:none}
@@ -718,7 +730,7 @@ kbd{font-family:var(--sans);font-size:.75rem;font-weight:500;padding:1px 6px;bor
   .barra-mini{width:36px;height:64px;border-radius:4px;box-shadow:0 0 0 1px var(--b2);flex-shrink:0;background:#fff;cursor:pointer}
   .barra-texto{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
   .barra-texto b{font-size:.8125rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;word-spacing:.12em}
-  .barra-texto span{font-size:.75rem;color:var(--fraco);display:inline-flex;align-items:center;gap:6px}
+  .barra-texto > span{font-size:.75rem;color:var(--fraco);display:inline-flex;align-items:center;gap:6px}
   .barra-texto span i{width:6px;height:6px;border-radius:50%;background:var(--ok)}
   .barra-texto span[data-estado="atualizando"] i{background:var(--aviso);animation:pulsa 1s ease-in-out infinite}
   .barra-texto span[data-estado="demo"] i{background:var(--acento)}       /* o verde é de "salvo" */
@@ -889,6 +901,12 @@ html.trocando-tema *,html.trocando-tema *::before,html.trocando-tema *::after{
 </head>
 <body>
 <a class="pular" href="#baixar">Pular para o botão Baixar</a>
+<!-- Faixa do modo demonstração (?demo=1). Fica no HTML, e não é criada pelo
+     script, para já ocupar o lugar na primeira pintura: nada pula depois. -->
+<div id="faixa-demo" role="status">
+  <span><strong>Modo demonstração</strong><span class="faixa-detalhe">: produtos de exemplo. Nada aqui é salvo.</span><span class="faixa-curto">: nada é salvo</span></span>
+  <button type="button" id="sair-demo" aria-label="Sair da demonstração"><span class="faixa-detalhe">Sair da demonstração</span><span class="faixa-curto" aria-hidden="true">Sair</span></button>
+</div>
 <noscript><p style="padding:24px;font:16px/1.5 system-ui,sans-serif">O ArtMaker precisa de JavaScript ligado para montar o encarte.</p></noscript>
 
 <!-- ══ ÍCONES (traço 2, 24×24) ══════════════════════════════ -->
@@ -1898,7 +1916,7 @@ function desenharPrecoCard(item, z, b, C, fundoCard, raio, lin) {
     ctx.beginPath(); ctx.moveTo(k.de.cx - tw / 2 - 4, k.de.cy + r.fs * .12); ctx.lineTo(k.de.cx + tw / 2 + 4, k.de.cy - r.fs * .18); ctx.stroke(); ctx.restore();
   };
   const fundo = C.cardBorda, tc = corSobre(fundo), st = estado.preco;
-  if (st !== 'circulo') riscado(ajustarCor(misturar(C.nomeTexto, fundoCard, .35), fundoCard, 3));
+  if (st !== 'circulo') riscado(ajustarCor(misturar(C.nomeTexto, fundoCard, .35), fundoCard, 4.5));   // texto pequeno: 4,5:1
   if (st === 'texto') { desenharPreco(p, k.cx, k.cy, fs, ajustarCor(C.precoTexto, fundoCard, 3), un); return; }
   /* Etiqueta: adesivo arredondado e inclinado, com contorno branco e sombra */
   if (st === 'etiqueta') {
@@ -3503,11 +3521,7 @@ function entrarModoDemo() {
     const img = ilustracao(DESENHOS[d]);
     Object.assign(estado.prods[i], { nome, preco, unidade, de, selo, img, arquivo: `exemplo-${d}.png`, claro: false, transparente: true, miniatura: miniatura(img) });   // ilustrações recortadas
   });
-  const f = document.createElement('div');
-  f.id = 'faixa-demo'; f.setAttribute('role', 'status');
-  f.innerHTML = '<span><strong>Modo demonstração</strong><span class="faixa-detalhe">: produtos de exemplo. Nada aqui é salvo.</span><span class="faixa-curto">: nada é salvo</span></span>'
-    + '<button type="button" id="sair-demo" aria-label="Sair da demonstração"><span class="faixa-detalhe">Sair da demonstração</span><span class="faixa-curto" aria-hidden="true">Sair</span></button>';
-  document.body.prepend(f);
+  const f = $('faixa-demo');
   $('sair-demo').addEventListener('click', async () => {
     if (!$('btn-desfazer').disabled && !(await confirmar({ titulo: 'Sair da demonstração?', msg: 'O que você mudou no exemplo não fica guardado.', ok: 'Sair', cancelar: 'Continuar no exemplo' }))) return;
     location.href = location.pathname;
