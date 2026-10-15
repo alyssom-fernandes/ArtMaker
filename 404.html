@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- A mesma política do app (tests/csp.test.mjs confere os hashes) -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-fgOZcvIwc+AAEEMBIORIiu56T2wqVvlLKmZTEGHNlqk=' 'sha256-gk9zdtJ8qLpoyFKAtJzloCvGvRC/z0bzmvfOYQ7yFws='; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
 <title>Página não encontrada | ArtMaker</title>
 <meta name="color-scheme" content="dark light">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2318181b'/%3E%3Crect x='19' y='9' width='26' height='46' rx='5' fill='none' stroke='%23fafafa' stroke-width='4'/%3E%3Cpath d='M19 21h26' stroke='%23fafafa' stroke-width='4'/%3E%3Cpath d='M27 31l7-1 5 5-7 7-5-5z' fill='%23f5b400'/%3E%3C/svg%3E">
