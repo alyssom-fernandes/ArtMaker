@@ -6,7 +6,7 @@
 <!-- Segurança: só roda o que está nesta página (cada script inline entra pelo
      hash, conferido em tests/csp.test.mjs) e, de fora, só as fontes do Google.
      O GitHub Pages não deixa mandar cabeçalhos, por isso vai por meta. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-6dwfToAI8snquE4xYPq1X2HdzZWQjIceF/zsA9KQFuM=' 'sha256-2b4BmTX2wfMEgaP6WSwYSj60GUU0NpKrWn/60U99STU=' 'sha256-NWxITWHY0A3Cduz6o+nhMoz/VkFAaDKvhPq7LRpJRV4=' 'sha256-Ld8I209GTQjonK1yDwBUZG4d12TzM+rT6WhlV+O6eW4='; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src data: blob:; connect-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-6dwfToAI8snquE4xYPq1X2HdzZWQjIceF/zsA9KQFuM=' 'sha256-2b4BmTX2wfMEgaP6WSwYSj60GUU0NpKrWn/60U99STU=' 'sha256-M/67F8I5QlebjW3TsN6PldzEDgKlnZ7F2ZA0PWc+2LA=' 'sha256-Ld8I209GTQjonK1yDwBUZG4d12TzM+rT6WhlV+O6eW4='; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src data: blob:; connect-src data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>ArtMaker | Encartes de ofertas</title>
 <meta name="description" content="Monte o encarte de ofertas do mercado, veja ao vivo e baixe em PNG 1080×1920 para o Status do WhatsApp e os Stories. Um arquivo só, sem cadastro: tudo fica no seu aparelho.">
@@ -543,18 +543,22 @@ input[type="date"]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.7}
 .previa-acoes{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 .previa-acoes .btn-pri{min-width:220px}
 /* Com largura, as ações vão para o lado do celular, com uma legenda curta */
-.previa-legenda{display:none}
+.previa-legenda,.previa-arquivo{display:none}
 .legenda-ir{align-self:flex-start;min-height:28px;padding:0;margin-top:2px;font-size:.8125rem}
 @media (min-width:1100px) and (min-height:520px){
-  .palco{flex-direction:row;gap:clamp(36px,4.5vw,72px)}
-  /* A altura do encarte (--h) também cede à largura que sobra ao lado das
-     ações (painel, folgas, vão, coluna de 236 e bisel): sem isso, entre 1100
+  /* Celular e ações formam um bloco só, no meio do palco; as ações terminam
+     na linha de baixo do encarte, onde o olho chega depois de vê-lo.
+     A altura do encarte (--h) também cede à largura que sobra ao lado das
+     ações (painel, folgas, vão, coluna de 248 e bisel): sem isso, entre 1100
      e 1200 px de largura numa tela alta, a imagem achatava. */
-  .palco{--h:min(calc((100vh - var(--faixa-h) - 108px) / 1.22),calc((100vw - var(--painel-l) - 48px - clamp(36px,4.5vw,72px) - 252px) * 16 / 9),900px);
-    --h:min(calc((100dvh - var(--faixa-h) - 108px) / 1.22),calc((100vw - var(--painel-l) - 48px - clamp(36px,4.5vw,72px) - 252px) * 16 / 9),900px)}
+  .palco{display:grid;grid-template-columns:auto 248px;align-items:end;justify-content:center;align-content:center;column-gap:clamp(40px,4vw,64px);
+    --h:min(calc((100vh - var(--faixa-h) - 108px) / 1.22),calc((100vw - var(--painel-l) - 48px - clamp(40px,4vw,64px) - 264px) * 16 / 9),900px);
+    --h:min(calc((100dvh - var(--faixa-h) - 108px) / 1.22),calc((100vw - var(--painel-l) - 48px - clamp(40px,4vw,64px) - 264px) * 16 / 9),900px)}
   #moldura-canvas{--h:inherit}
-  .palco .previa-acoes{flex-direction:column;flex-wrap:nowrap;align-items:stretch;width:236px}
+  .palco .previa-acoes{flex-direction:column;flex-wrap:nowrap;align-items:stretch;width:248px;padding-bottom:calc(var(--h) * .094 + 8px)}
   .palco .previa-acoes .btn-pri{min-width:0}
+  .previa-arquivo{display:block;margin-top:6px;padding-top:12px;border-top:1px solid var(--b1);font-size:.75rem;line-height:1.5;color:var(--fraco);overflow-wrap:anywhere}
+  .previa-arquivo span{display:block;color:var(--texto)}
   .previa-legenda{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
   .previa-legenda b{font-size:1rem;font-weight:650;letter-spacing:-.005em;line-height:1.3}
   .previa-legenda span{font-size:.8125rem;color:var(--fraco);line-height:1.5}
@@ -666,6 +670,9 @@ html:not([data-demo]) #faixa-demo{display:none}
 html[data-demo]{--faixa-h:33px}
 @media (pointer:coarse){html[data-demo]{--faixa-h:45px}}
 #faixa-demo strong{color:var(--texto);font-weight:600}
+/* Para quem não lê português; some quando falta largura */
+.faixa-en{margin-left:auto;padding-left:16px}
+@media (max-width:1279px){.faixa-en{display:none}}
 #faixa-demo > span:first-child::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--acento);margin-right:8px;vertical-align:2px}
 .faixa-curto{display:none}
 @media (max-width:560px){#faixa-demo .faixa-detalhe{display:none} #faixa-demo .faixa-curto{display:inline}}
@@ -689,7 +696,8 @@ html[data-demo]{--faixa-h:33px}
   .chip:hover{color:var(--texto);background:var(--s4)}
   .seg:hover,.opcao:hover{border-color:var(--fraco2)}
   .seg.on:hover,.opcao.on:hover{border-color:var(--selecao)}
-  .paleta:hover canvas{box-shadow:0 0 0 1px var(--fraco2)}
+  .paleta:hover canvas{box-shadow:0 0 0 2px var(--s1),0 0 0 4px var(--fraco2)}   /* com o mouse em cima, o celular grande mostra a paleta */
+  .paleta:hover span{color:var(--texto)}
   .paleta.on:hover canvas{box-shadow:0 0 0 2px var(--s1),0 0 0 4px var(--selecao)}
   .amostra:hover{box-shadow:inset 0 0 0 1px var(--amostra-borda),0 0 0 1px var(--fraco2)}
   .amostra.on:hover{box-shadow:0 0 0 2px var(--s1),0 0 0 4px var(--selecao)}
@@ -904,8 +912,9 @@ html.trocando-tema *,html.trocando-tema *::before,html.trocando-tema *::after{
 <!-- Faixa do modo demonstração (?demo=1). Fica no HTML, e não é criada pelo
      script, para já ocupar o lugar na primeira pintura: nada pula depois. -->
 <div id="faixa-demo" role="status">
-  <span><strong>Modo demonstração</strong><span class="faixa-detalhe">: produtos de exemplo. Nada aqui é salvo.</span><span class="faixa-curto">: nada é salvo</span></span>
+  <span><strong>Modo demonstração</strong><span class="faixa-detalhe">: preços e produtos de exemplo. Nada aqui é salvo.</span><span class="faixa-curto">: nada é salvo</span></span>
   <button type="button" id="sair-demo" aria-label="Sair da demonstração"><span class="faixa-detalhe">Sair da demonstração</span><span class="faixa-curto" aria-hidden="true">Sair</span></button>
+  <span class="faixa-en" lang="en">Demo: sample data, nothing is saved.</span>
 </div>
 <noscript><p style="padding:24px;font:16px/1.5 system-ui,sans-serif">O ArtMaker precisa de JavaScript ligado para montar o encarte.</p></noscript>
 
@@ -1091,6 +1100,7 @@ html.trocando-tema *,html.trocando-tema *::before,html.trocando-tema *::after{
           <button type="button" class="btn btn-texto legenda-ir" id="legenda-ir" hidden>Ir para o que falta</button></div>
         <button type="button" class="btn btn-pri btn-grande" id="baixar" data-acao="baixar" title="Baixar (Ctrl+S)"><span class="btn-rotulo">Baixar encarte (PNG)</span></button>
         <button type="button" class="btn btn-sec btn-grande" data-acao="compartilhar" hidden><span class="btn-rotulo">Compartilhar</span></button>
+        <p class="previa-arquivo">Nome do arquivo<span id="previa-arquivo"></span></p>
       </div>
     </div>
   </section>
@@ -1116,6 +1126,7 @@ html.trocando-tema *,html.trocando-tema *::before,html.trocando-tema *::after{
     <div id="lugar-dlg" class="moldura-canvas"></div>
     <div class="previa-acoes-bloco">
       <div class="previa-acoes">
+        <button type="button" class="btn btn-sec btn-grande" id="editar-exemplo" data-fechar hidden><span class="btn-rotulo">Editar o exemplo</span></button>
         <button type="button" class="btn btn-sec btn-grande" data-acao="compartilhar" hidden><span class="btn-rotulo">Compartilhar</span></button>
         <button type="button" class="btn btn-pri btn-grande" data-acao="baixar"><span class="btn-rotulo">Baixar</span></button>
       </div>
@@ -1135,7 +1146,8 @@ html.trocando-tema *,html.trocando-tema *::before,html.trocando-tema *::after{
       <div class="marca-ico" aria-hidden="true"><svg width="26" height="26"><use href="#i-marca"/></svg></div>
       <div><b>ArtMaker</b><span id="sobre-versao"></span></div>
     </div>
-    <p>Monta encartes de ofertas no formato do Status do WhatsApp e dos Stories (1080 × 1920). <strong>Tudo fica neste aparelho:</strong> textos, cores e fotos não são enviados para lugar nenhum.</p>
+    <p>Monta encartes de ofertas no formato do Status do WhatsApp e dos Stories (1080 × 1920). <strong>Tudo fica neste aparelho:</strong> textos, cores e fotos não são enviados para lugar nenhum. Da internet vêm só as fontes, do Google Fonts.</p>
+    <p>Feito para o Mercado Vitória, um mercado de verdade: o nome e a logo aparecem com a autorização da dona.</p>
     <h3 class="atalhos-titulo so-mouse">No computador</h3>
     <dl class="lista-atalhos so-mouse" aria-label="Atalhos de teclado">
       <dt><kbd>Ctrl</kbd> <kbd>Z</kbd></dt><dd>Desfazer</dd>
@@ -3045,8 +3057,27 @@ function nomeAmostra(c) { return NOMES_AMOSTRAS[c] || nomeDaCor(c); }
 function montarPaletas() {
   $('paletas').innerHTML = PALETAS.map((p, i) => `<label class="paleta"><input type="radio" name="paleta" value="${i}" aria-label="${esc(p.nome)}">
     <canvas id="pal-${i}" aria-hidden="true"></canvas><span aria-hidden="true">${esc(p.nome)}</span></label>`).join('');
+  /* Com o mouse, passar por uma paleta mostra o encarte com ela no celular
+     grande; o clique é que aplica, e sair da lista volta ao encarte de antes */
+  let espiada = -1;
+  const espiar = i => {
+    if (i === espiada) return;
+    espiada = i;
+    if (i < 0 || Object.keys(estado.C).every(k => PALETAS[i][k] === estado.C[k])) { agendarDesenho(); atualizarLegenda(); return; }
+    desenharEncarte($('c').getContext('2d'), { cores: PALETAS[i] });
+    /* a legenda ao lado diz que é só uma prévia, para não parecer já aplicada */
+    trocarTexto($('legenda-titulo'), PALETAS[i].nome);
+    trocarTexto($('legenda-texto'), 'Só uma prévia. Clique na paleta para aplicar.');
+    $('legenda-ir').hidden = true; $('previa-arquivo').parentElement.hidden = true;
+  };
+  $('paletas').addEventListener('pointerover', e => {
+    const l = e.pointerType === 'mouse' && !celular() && e.target.closest('.paleta');
+    if (l) espiar(+l.querySelector('input').value);
+  });
+  $('paletas').addEventListener('pointerleave', () => espiar(-1));
   $('paletas').addEventListener('change', e => {
     const i = +e.target.value, eraPersonalizada = PALETAS.every(p => Object.keys(estado.C).some(k => p[k] !== estado.C[k]));
+    espiada = i;
     alterar('paleta', () => { estado.C = coresDaPaleta(i); });
     marcarCores(); agendarMiniEstilos(); pulsar();
     if (eraPersonalizada) mostrarToast(`Paleta ${PALETAS[i].nome} aplicada.`, 'info', 6000, { rotulo: 'Desfazer', fn: desfazer });
@@ -3171,7 +3202,7 @@ function montarEstilos() {
       <div class="opcoes${e.chave === 'fonte' ? ' opcoes-2' : ''}" role="radiogroup" aria-labelledby="te-${e.chave}" id="op-${e.chave}"${e.chave === 'borda' ? ' aria-describedby="dica-borda"' : ''}>
       ${e.opcoes.map(([v, t]) => `<label class="opcao"><input type="radio" name="est-${e.chave}" value="${v}">
         ${e.chave === 'fonte' ? `<span class="fonte-amostra" style="font-family:${esc(FONTES[v])};font-weight:700" aria-hidden="true">Aa 9,90</span>` : `<canvas class="mini" data-mini="${e.chave}|${v}" width="72" height="44" aria-hidden="true"></canvas>`}<span>${esc(t)}</span></label>`).join('')}
-      </div>${e.chave === 'borda' ? '<p class="ajuda" id="dica-borda" hidden>O estilo Sombra não usa borda.</p>' : ''}</fieldset>`).join('')}
+      </div>${e.chave === 'borda' ? '<p class="ajuda" id="dica-borda" hidden>O quadro Sombra não tem borda. A espessura vale para Contorno, Fundo colorido e Degradê.</p>' : ''}</fieldset>`).join('')}
     </section>`).join('');
   $('painel-estilo').addEventListener('change', e => {
     const m = /^est-(\w+)$/.exec(e.target.name || ''); if (!m) return;
@@ -3185,8 +3216,10 @@ function marcarEstilos() {
   for (const e of ESTILOS) document.querySelectorAll(`input[name="est-${e.chave}"]`).forEach(r => {
     const on = String(estado[e.chave]) === r.value; r.checked = on; r.parentElement.classList.toggle('on', on);
   });
+  /* Sombra não tem borda: as espessuras saem de vista, em vez de ficarem apagadas e parecerem quebradas */
   const sombraAtiva = estado.cartao === 'sombra';
-  document.querySelectorAll('input[name="est-borda"]').forEach(r => { r.disabled = sombraAtiva; r.parentElement.classList.toggle('desab', sombraAtiva); });
+  document.querySelectorAll('input[name="est-borda"]').forEach(r => { r.disabled = sombraAtiva; });
+  $('op-borda').hidden = sombraAtiva;
   $('dica-borda').hidden = !sombraAtiva;
   const semFundo = estado.cabecalho !== 'minimalista', cf = document.querySelector('[aria-labelledby="t-cor-encarteFundo"]');
   if (cf) { cf.classList.toggle('desab', semFundo); cf.setAttribute('aria-describedby', 'dica-fundo'); cf.querySelectorAll('input').forEach(i => { i.disabled = semFundo; }); $('dica-fundo').hidden = !semFundo; }
@@ -3237,6 +3270,8 @@ function atualizarLegenda() {
     ? [frase && `${frase[0].toUpperCase()}${frase.slice(1)}.`, semLoja && 'Falta o nome da loja.'].filter(Boolean).join(' ')
     : 'Baixe e publique em “Meu status”, ou compartilhe direto do aparelho.');
   $('legenda-ir').hidden = !falta;
+  trocarTexto($('previa-arquivo'), nomeArquivo(estado.loja, new Date()));
+  $('previa-arquivo').parentElement.hidden = falta;     // enquanto falta algo, a vez é do "Ir para o que falta"
   trocarTexto($('dlg-previa-sub'), !falta ? 'Pronto para o Status · 1080 × 1920'
     : incompletos ? `Quase lá · ${incompletos} produto${incompletos > 1 ? 's' : ''} por completar` : 'Quase lá · falta o nome da loja');
 }
@@ -3329,9 +3364,10 @@ function abrirPrevia() {
   const d = $('dlg-previa');
   $('lugar-dlg').appendChild($('c'));
   abrirDialogo(d);
-  const alvo = podeCompartilhar ? d.querySelector('[data-acao="compartilhar"]') : d.querySelector('[data-acao="baixar"]');
+  /* o primeiro botão à vista: Compartilhar, onde o aparelho deixa (na demonstração, Editar o exemplo); senão, Baixar */
+  const alvo = [...d.querySelectorAll('.previa-acoes .btn')].find(b => !b.hidden);
   if (alvo) alvo.focus();
-  if (podeCompartilhar) prepararBlob();
+  if (!d.querySelector('[data-acao="compartilhar"]').hidden) prepararBlob();
 }
 function aoFecharPrevia() { $('moldura-canvas').appendChild($('c')); (celular() ? $('btn-ver') : $('baixar')).focus(); }
 
@@ -3749,6 +3785,16 @@ async function iniciar() {
   if (validadeVencida) { salvarEstado(); mostrarToast(`A data das ofertas tinha passado. Agora está para amanhã (${dataBR(estado.validade)}).`, 'info', 6500); }
   if (salvo && salvo.esquema > ESQUEMA) mostrarToast('Este encarte foi salvo por uma versão mais nova do ArtMaker. Confira antes de usar.', 'aviso', 8000);
   mostrarBoasVindas(!!salvo); detectarCompartilhar();
+  /* Demonstração no celular: o resultado primeiro, e na folha "Editar o
+     exemplo" ao lado do Baixar (compartilhar o exemplo não serve a quem
+     visita). Só na primeira carga da aba: recarregar não reabre. */
+  if (MODO_DEMO && celular()) {
+    $('editar-exemplo').hidden = false;
+    $('dlg-previa').querySelector('[data-acao="compartilhar"]').hidden = true; $('dica-compartilhar').hidden = true;
+    let vista = false;
+    try { vista = sessionStorage.getItem('artmaker:demo-folha') === '1'; sessionStorage.setItem('artmaker:demo-folha', '1'); } catch (e) {}
+    if (!vista) abrirPrevia();
+  }
   setTimeout(() => document.documentElement.classList.add('pronto'), 900);
 }
 document.addEventListener('DOMContentLoaded', () => { iniciar().catch(e => registrarErro('iniciar', e.message, e.stack)); });
