@@ -166,6 +166,15 @@ test('esc neutraliza HTML', () => {
   assert.equal(f('esc')('<img src=x onerror="a">'), '&lt;img src=x onerror=&quot;a&quot;&gt;');
 });
 
+test('contadorTexto só aparece perto do limite', () => {
+  const c = f('contadorTexto');
+  assert.equal(c(0, 60), '');
+  assert.equal(c(49, 60), '');
+  assert.equal(c(50, 60), '50/60');
+  assert.equal(c(58, 60), '58/60');
+  assert.equal(c(60, 60), '60/60');
+});
+
 /* normalizarDados: a validação de tudo o que vem de fora (localStorage,
    projeto aberto de arquivo). Entradas hostis não podem quebrar nem passar. */
 const normalizar = d => JSON.parse(JSON.stringify(f('normalizarDados')(d)));

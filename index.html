@@ -6,7 +6,7 @@
 <!-- Segurança: só roda o que está nesta página (cada script inline entra pelo
      hash, conferido em tests/csp.test.mjs) e, de fora, só as fontes do Google.
      O GitHub Pages não deixa mandar cabeçalhos, por isso vai por meta. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-6dwfToAI8snquE4xYPq1X2HdzZWQjIceF/zsA9KQFuM=' 'sha256-2b4BmTX2wfMEgaP6WSwYSj60GUU0NpKrWn/60U99STU=' 'sha256-I+0yHPhYoOMLNzqkEy/dKRhMnZexBm6BUtVtK4nsETE=' 'sha256-Ld8I209GTQjonK1yDwBUZG4d12TzM+rT6WhlV+O6eW4='; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src data: blob:; connect-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-6dwfToAI8snquE4xYPq1X2HdzZWQjIceF/zsA9KQFuM=' 'sha256-2b4BmTX2wfMEgaP6WSwYSj60GUU0NpKrWn/60U99STU=' 'sha256-XVXZhScoAhROq4MMqsBoigFIuHhxuZfUt+FHyWzCCYw=' 'sha256-Ld8I209GTQjonK1yDwBUZG4d12TzM+rT6WhlV+O6eW4='; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src data: blob:; connect-src data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>ArtMaker | Encartes de ofertas</title>
 <meta name="description" content="Monte o encarte de ofertas do mercado, veja ao vivo e baixe em PNG 1080×1920 para o Status do WhatsApp e os Stories. Um arquivo só, sem cadastro: tudo fica no seu aparelho.">
@@ -538,6 +538,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.7}
 .fantasma{position:absolute;pointer-events:none;z-index:1}
 .barra-mini.pulso{animation:pulsoMini .6s var(--curva)}
 @keyframes pulsoMini{40%{box-shadow:0 0 0 3px var(--acento),var(--sh-2)}}
+.contador{text-align:right;margin-top:2px;font-variant-numeric:tabular-nums}
+.contador.cheio{color:var(--aviso)}
 .ajuda-aviso{color:var(--aviso);animation:entraDesce var(--dur) var(--curva)}
 .moldura-canvas.pulso::after{content:"";position:absolute;inset:-6px;border-radius:19px;border:2px solid var(--acento);opacity:0;animation:pulsoAnel .7s var(--curva)}
 .previa-acoes{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
@@ -1335,6 +1337,11 @@ function descontoPct(de, por) {
   if (ca <= 0 || cb <= 0 || cb >= ca) return 0;
   return Math.floor((ca - cb) * 100 / ca);
 }
+
+/* Contador de letras de um campo ("58/60"): só aparece nos últimos 10
+   caracteres do limite, para o corte do maxlength não parecer defeito. */
+const FOLGA_CONTADOR = 10;
+function contadorTexto(n, max) { return n >= max - FOLGA_CONTADOR ? `${n}/${max}` : ''; }
 
 /* Datas locais em ISO (AAAA-MM-DD). toISOString() daria o dia seguinte
    depois das 21h no horário de Brasília. */
@@ -2796,7 +2803,8 @@ function htmlProduto(i) {
   </div>
   <div class="campo"><label class="rotulo" for="p${i}-nome">Nome</label>
     <input class="entrada" type="text" id="p${i}-nome" data-campo="nome" enterkeyhint="next" maxlength="${LIMITES.nome}" autocomplete="off" placeholder="Ex.: Arroz Branco 5 kg" aria-describedby="p${i}-nome-dica">
-    <p class="ajuda ajuda-aviso" id="p${i}-nome-dica" hidden>No encarte, o nome sai cortado. Encurte um pouco.</p></div>
+    <p class="ajuda ajuda-aviso" id="p${i}-nome-dica" hidden>No encarte, o nome sai cortado. Encurte um pouco.</p>
+    <p class="ajuda contador" id="p${i}-nome-cont" aria-hidden="true" hidden></p></div>
   <div class="linha-preco">
     <div class="campo"><label class="rotulo" for="p${i}-preco">Preço</label>
       <div class="com-prefixo"><span class="prefixo" aria-hidden="true">R$</span><input class="entrada" type="text" id="p${i}-preco" data-campo="preco" enterkeyhint="next" inputmode="decimal" maxlength="${LIMITES.preco}" autocomplete="off" spellcheck="false" placeholder="0,00" aria-describedby="p${i}-preco-erro"></div>
@@ -2832,8 +2840,13 @@ function preencherProduto(i) {
   const p = estado.prods[i];
   $(`p${i}-nome`).value = p.nome; $(`p${i}-preco`).value = p.preco; $(`p${i}-de`).value = p.de;
   $(`p${i}-unidade`).value = p.unidade; $(`p${i}-selo`).value = p.selo;
-  validarPreco(i, 'preco', true); validarPreco(i, 'de', true); atualizarResumo(i);
+  validarPreco(i, 'preco', true); validarPreco(i, 'de', true); atualizarResumo(i); atualizarContadorNome(i);
   const d = $(`p${i}-nome-dica`); if (d) d.hidden = !nomesCortados.includes(i);
+}
+function atualizarContadorNome(i) {
+  const c = $(`p${i}-nome-cont`), el = $(`p${i}-nome`); if (!c || !el) return;
+  const t = contadorTexto(el.value.length, LIMITES.nome);
+  c.textContent = t; c.hidden = !t; c.classList.toggle('cheio', el.value.length >= LIMITES.nome);
 }
 function atualizarResumo(i) {
   const p = estado.prods[i], h = $(`p${i}-titulo`); if (!h) return;
@@ -2954,7 +2967,7 @@ function ligarProdutos() {
   const pc = $('produtos');
   pc.addEventListener('input', e => {
     const i = indiceDe(e.target), campo = e.target.dataset.campo; if (i < 0 || !campo) return;
-    if (campo === 'nome') { alterar(`nome${i}`, () => { estado.prods[i].nome = e.target.value; }); atualizarResumo(i); }
+    if (campo === 'nome') { alterar(`nome${i}`, () => { estado.prods[i].nome = e.target.value; }); atualizarResumo(i); atualizarContadorNome(i); }
     else if (campo === 'preco' || campo === 'de') {
       const v = validarPreco(i, campo, false);
       alterar(`${campo}${i}`, () => { estado.prods[i][campo] = v; }); atualizarResumo(i);
