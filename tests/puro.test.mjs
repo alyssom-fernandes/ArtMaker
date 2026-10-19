@@ -165,3 +165,156 @@ test('migrarDados traduz os nomes antigos de estilo e de cor', () => {
 test('esc neutraliza HTML', () => {
   assert.equal(f('esc')('<img src=x onerror="a">'), '&lt;img src=x onerror=&quot;a&quot;&gt;');
 });
+
+/* normalizarDados: a validação de tudo o que vem de fora (localStorage,
+   projeto aberto de arquivo). Entradas hostis não podem quebrar nem passar. */
+const normalizar = d => JSON.parse(JSON.stringify(f('normalizarDados')(d)));
+const padrao = () => JSON.parse(JSON.stringify(f('estadoPadrao')()));
+
+test('normalizarDados: o que não é objeto vira o encarte padrão', () => {
+  for (const ruim of [null, undefined, 0, 7, 'texto', true]) {
+    const e = normalizar(ruim);
+    assert.equal(e.loja, padrao().loja, String(ruim));
+    assert.equal(e.qtd, 4);
+    assert.equal(e.prods.length, 6);
+  }
+});
+
+test('normalizarDados: campos faltando ficam com o padrão', () => {
+  const e = normalizar({}), p = padrao();
+  assert.deepEqual(e, p);
+  assert.equal(normalizar({ loja: 'Mercado X' }).titulo, p.titulo);
+});
+
+test('normalizarDados: tipos errados são ignorados', () => {
+  const e = normalizar({
+    loja: 123, endereco: { a: 1 }, titulo: ['x'], obs: null, validade: 20260101, qtd: '3',
+    cartao: 42, preco: {}, logo: 'outra', C: 'vermelho', prods: 'nada'
+  }), p = padrao();
+  assert.equal(e.loja, p.loja);
+  assert.equal(e.endereco, p.endereco);
+  assert.equal(e.titulo, p.titulo);
+  assert.equal(e.obs, p.obs);
+  assert.equal(e.qtd, p.qtd);
+  assert.equal(e.cartao, p.cartao);
+  assert.equal(e.preco, p.preco);
+  assert.equal(e.logo, p.logo);
+  assert.deepEqual(e.C, p.C);
+  assert.equal(e.prods.length, 6);
+  assert.ok(f('isoValido')(e.validade), 'validade sempre válida');
+});
+
+test('normalizarDados: textos longos são cortados no limite do campo', () => {
+  const longo = 'x'.repeat(5000), L = f('LIMITES');
+  const e = normalizar({ loja: longo, endereco: longo, titulo: longo, obs: longo,
+    prods: [{ nome: longo, preco: longo, de: longo, arquivo: longo }] });
+  assert.equal(e.loja.length, L.loja);
+  assert.equal(e.endereco.length, L.endereco);
+  assert.equal(e.titulo.length, L.titulo);
+  assert.equal(e.obs.length, L.obs);
+  assert.equal(e.prods[0].nome.length, L.nome);
+  assert.equal(e.prods[0].preco.length, L.preco);
+  assert.equal(e.prods[0].de.length, L.preco);
+  assert.equal(e.prods[0].arquivo.length, L.arquivo);
+});
+
+test('normalizarDados: qtd só aceita inteiros de 1 a 6', () => {
+  for (const ruim of [0, 7, -1, 2.5, NaN, Infinity, '4', null]) assert.equal(normalizar({ qtd: ruim }).qtd, 4, String(ruim));
+  for (const bom of [1, 3, 6]) assert.equal(normalizar({ qtd: bom }).qtd, bom);
+});
+
+test('normalizarDados: só cores #rrggbb valem e as chaves desconhecidas somem', () => {
+  const p = padrao();
+  const e = normalizar({ C: {
+    cabecalhoFundo: '#ABCDEF', cabecalhoTexto: 'red', cardFundo: '#fff', cardBorda: 'url(javascript:alert(1))',
+    nomeTexto: '#12345g', precoTexto: 123, encarteFundo: '#1234567', rodapeFundo: null, rodapeTexto: '#000000', invasora: '#ffffff'
+  } });
+  assert.equal(e.C.cabecalhoFundo, '#abcdef', 'minúsculas');
+  assert.equal(e.C.rodapeTexto, '#000000');
+  for (const k of ['cabecalhoTexto', 'cardFundo', 'cardBorda', 'nomeTexto', 'precoTexto', 'encarteFundo', 'rodapeFundo'])
+    assert.equal(e.C[k], p.C[k], k);
+  assert.equal('invasora' in e.C, false);
+});
+
+test('normalizarDados: estilos e logo só com valores conhecidos', () => {
+  const e = normalizar({ fonte: 'comic', cartao: 'contorno', borda: 6, raio: 13, preco: 'circulo', cabecalho: '<b>', rodape: 'onda', logo: 'nenhuma' });
+  const p = padrao();
+  assert.equal(e.fonte, p.fonte);
+  assert.equal(e.cartao, 'contorno');
+  assert.equal(e.borda, 6);
+  assert.equal(e.raio, p.raio, '13 não é um raio da lista');
+  assert.equal(e.preco, 'circulo');
+  assert.equal(e.cabecalho, p.cabecalho);
+  assert.equal(e.rodape, 'onda');
+  assert.equal(e.logo, 'nenhuma');
+  assert.equal(normalizar({ borda: '6' }).borda, p.borda, 'número em texto não vale');
+});
+
+test('normalizarDados: validade inválida vira amanhã', () => {
+  const amanha = f('amanhaIso')();
+  assert.equal(normalizar({ validade: '2026-02-31' }).validade, amanha);
+  assert.equal(normalizar({ validade: '0002-01-01' }).validade, amanha);
+  assert.equal(normalizar({ validade: '<img>' }).validade, amanha);
+  assert.equal(normalizar({ validade: '2030-05-17' }).validade, '2030-05-17');
+});
+
+test('normalizarDados: produtos hostis não quebram e ficam dentro das regras', () => {
+  const e = normalizar({ prods: [
+    null, 'texto', 5, [], { nome: 9, preco: {}, unidade: 'tonelada', selo: 'GRÁTIS', foto: '../../etc', moldura: 'sim', claro: 0 },
+    { unidade: 'kg', selo: 'desconto', foto: 'f-abc123-xyz789', transparente: 1 },
+    { nome: 'ok' }, { nome: 'sétimo, ignorado' }
+  ] });
+  assert.equal(e.prods.length, 6, 'sempre 6 produtos');
+  const vazio = padrao().prods[0];
+  assert.deepEqual(e.prods[0], vazio);
+  assert.deepEqual(e.prods[1], vazio);
+  assert.equal(e.prods[4].nome, '');
+  assert.equal(e.prods[4].unidade, '');
+  assert.equal(e.prods[4].selo, '');
+  assert.equal(e.prods[4].foto, '', 'id de foto fora do formato é descartado');
+  assert.equal(e.prods[4].moldura, true, 'valor verdadeiro vira booleano');
+  assert.equal(e.prods[4].claro, false);
+  assert.equal(e.prods[5].unidade, 'kg');
+  assert.equal(e.prods[5].selo, 'desconto');
+  assert.equal(e.prods[5].foto, 'f-abc123-xyz789');
+  assert.equal(e.prods[5].transparente, true);
+  assert.equal(e.prods.some(p => p.nome === 'sétimo, ignorado'), false);
+});
+
+test('normalizarDados: não altera o objeto recebido e devolve cópias independentes', () => {
+  const entrada = { loja: 'A', C: { cardFundo: '#ffffff' }, prods: [{ nome: 'x' }] };
+  const copia = JSON.stringify(entrada);
+  const e1 = f('normalizarDados')(entrada), e2 = f('normalizarDados')(entrada);
+  assert.equal(JSON.stringify(entrada), copia);
+  e1.C.cardFundo = '#000000'; e1.prods[0].nome = 'mudou';
+  assert.equal(e2.C.cardFundo, '#ffffff');
+  assert.equal(e2.prods[0].nome, 'x');
+  assert.equal(f('estadoPadrao')().prods[0].nome, '');
+});
+
+test('normalizarDados: __proto__ no JSON não contamina nada', () => {
+  const hostil = JSON.parse('{"__proto__":{"polui":1},"C":{"__proto__":{"polui":1}},"prods":[{"__proto__":{"polui":1}}]}');
+  const e = f('normalizarDados')(hostil);
+  assert.equal(e.polui, undefined);
+  assert.equal(vm.runInContext('({}).polui', ctx), undefined);
+});
+
+test('migrarDados traduz nomes antigos em inglês e mantém o resto', () => {
+  const m = f('migrarDados');
+  const n = m({ cartao: 'border', preco: 'tag', cabecalho: 'banner', rodape: 'wave', C: { hbg: '#111111', ptxt: '#222222', cardFundo: '#ffffff' } });
+  assert.equal(n.cartao, 'contorno');
+  assert.equal(n.preco, 'etiqueta');
+  assert.equal(n.cabecalho, 'diagonal');
+  assert.equal(n.rodape, 'onda');
+  assert.deepEqual({ ...n.C }, { cabecalhoFundo: '#111111', precoTexto: '#222222', cardFundo: '#ffffff' });
+  assert.equal(m(null), null);
+  assert.equal(m('x'), 'x');
+  assert.equal(m({ cartao: 'sombra' }).cartao, 'sombra');
+});
+
+test('projeto antigo (nomes em inglês) abre traduzido por normalizarDados', () => {
+  const e = normalizar({ cartao: 'filled', preco: 'circle', C: { hbg: '#0a0a0a' } });
+  assert.equal(e.cartao, 'preenchido');
+  assert.equal(e.preco, 'circulo');
+  assert.equal(e.C.cabecalhoFundo, '#0a0a0a');
+});

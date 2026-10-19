@@ -6,7 +6,7 @@
 <!-- Segurança: só roda o que está nesta página (cada script inline entra pelo
      hash, conferido em tests/csp.test.mjs) e, de fora, só as fontes do Google.
      O GitHub Pages não deixa mandar cabeçalhos, por isso vai por meta. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-6dwfToAI8snquE4xYPq1X2HdzZWQjIceF/zsA9KQFuM=' 'sha256-2b4BmTX2wfMEgaP6WSwYSj60GUU0NpKrWn/60U99STU=' 'sha256-YPr7Lio8itNnPoIuowD2GtXwRZhAMEjPiyu8TWqdFLA=' 'sha256-Ld8I209GTQjonK1yDwBUZG4d12TzM+rT6WhlV+O6eW4='; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src data: blob:; connect-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-6dwfToAI8snquE4xYPq1X2HdzZWQjIceF/zsA9KQFuM=' 'sha256-2b4BmTX2wfMEgaP6WSwYSj60GUU0NpKrWn/60U99STU=' 'sha256-I+0yHPhYoOMLNzqkEy/dKRhMnZexBm6BUtVtK4nsETE=' 'sha256-Ld8I209GTQjonK1yDwBUZG4d12TzM+rT6WhlV+O6eW4='; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src data: blob:; connect-src data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>ArtMaker | Encartes de ofertas</title>
 <meta name="description" content="Monte o encarte de ofertas do mercado, veja ao vivo e baixe em PNG 1080×1920 para o Status do WhatsApp e os Stories. Um arquivo só, sem cadastro: tudo fica no seu aparelho.">
@@ -1194,14 +1194,16 @@ html.trocando-tema *,html.trocando-tema *::before,html.trocando-tema *::after{
    AFN Systems · by Alyssom Fernandes
 
    Ordem deste arquivo:
-     CONFIGURAÇÃO → PURO (testado em tests/puro.test.mjs) → DESENHO
+     PURO: configuração e funções sem DOM (testado em tests/puro.test.mjs) → DESENHO
      → ESTADO E SALVAMENTO → INTERFACE → EXPORTAR → DEMO → INÍCIO
    A logo padrão fica no último <script>, sozinha, porque é longa.
    ════════════════════════════════════════════════════════════════ */
 
 const VERSAO = '2.1.0';
 
-/* ══ CONFIGURAÇÃO ═════════════════════════════════════════════ */
+/* ══ PURO ══════════════════════════════════════════════════════
+   Configuração e funções sem DOM. tests/puro.test.mjs extrai este bloco
+   (daqui até FIM PURO) e o testa com `node --test`. */
 const PALETAS = [
   { nome: 'Preto & Ouro',     cabecalhoFundo: '#111111', cabecalhoTexto: '#c5a059', cardFundo: '#ffffff', cardBorda: '#c5a059', nomeTexto: '#111111', precoTexto: '#b38f4d', encarteFundo: '#f8f8f8', rodapeFundo: '#111111', rodapeTexto: '#c5a059' },
   { nome: 'Azul & Dourado',   cabecalhoFundo: '#0f243f', cabecalhoTexto: '#c5a059', cardFundo: '#ffffff', cardBorda: '#c5a059', nomeTexto: '#0f243f', precoTexto: '#b38f4d', encarteFundo: '#f5f5f3', rodapeFundo: '#c5a059', rodapeTexto: '#0f243f' },
@@ -1267,9 +1269,7 @@ const SELOS = [
   ['SÓ HOJE', 'SÓ HOJE'], ['IMPERDÍVEL', 'IMPERDÍVEL'], ['ÚLTIMAS UNIDADES', 'ÚLTIMAS UNIDADES']
 ];
 
-/* ══ PURO ══════════════════════════════════════════════════════
-   Funções sem DOM. tests/puro.test.mjs extrai este bloco e o testa com
-   `node --test`. */
+/* Funções sem DOM */
 function doisDigitos(n) { return String(n).padStart(2, '0'); }
 function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -1380,6 +1380,57 @@ function migrarDados(d) {
   for (const k of ['cartao', 'preco', 'cabecalho', 'rodape']) if (typeof n[k] === 'string' && VALORES_ANTIGOS[n[k]]) n[k] = VALORES_ANTIGOS[n[k]];
   if (n.C && typeof n.C === 'object') n.C = Object.fromEntries(Object.entries(n.C).map(([k, v]) => [CORES_ANTIGAS[k] || k, v]));
   return n;
+}
+/* Estado: limites, campos, estilos e o encarte padrão */
+const LIMITES = { loja: 40, endereco: 80, titulo: 36, obs: 70, nome: 60, preco: 12, arquivo: 80 };
+const CAMPOS_TEXTO = ['loja', 'endereco', 'titulo', 'validade', 'obs'];
+const CAMPOS_PRODUTO = ['nome', 'preco', 'unidade', 'de', 'selo', 'moldura', 'arquivo', 'claro', 'fundoBranco', 'transparente', 'foto'];
+const ESTILOS = [
+  { chave: 'fonte', titulo: 'Fonte do encarte', grupo: 'Texto', opcoes: [['moderna', 'Moderna'], ['classica', 'Clássica']] },
+  { chave: 'cartao', titulo: 'Aparência do quadro', grupo: 'Quadros dos produtos', opcoes: [['contorno', 'Contorno'], ['sombra', 'Sombra'], ['preenchido', 'Fundo colorido'], ['degrade', 'Degradê']] },
+  { chave: 'borda', titulo: 'Espessura da borda', grupo: 'Quadros dos produtos', num: true, opcoes: [[0, 'Sem borda'], [2, 'Fina'], [4, 'Média'], [6, 'Grossa']] },
+  { chave: 'raio', titulo: 'Cantos', grupo: 'Quadros dos produtos', num: true, opcoes: [[0, 'Retos'], [12, 'Leves'], [24, 'Médios'], [40, 'Redondos']] },
+  { chave: 'preco', titulo: 'Formato do preço', grupo: 'Preço', opcoes: [['texto', 'Texto'], ['etiqueta', 'Etiqueta'], ['circulo', 'Círculo'], ['faixa', 'Faixa']] },
+  { chave: 'cabecalho', titulo: 'Cabeçalho', grupo: 'Cabeçalho e rodapé', opcoes: [['classico', 'Clássico'], ['faixa', 'Com faixa'], ['diagonal', 'Diagonal'], ['minimalista', 'Minimalista']] },
+  { chave: 'rodape', titulo: 'Rodapé', grupo: 'Cabeçalho e rodapé', opcoes: [['solido', 'Sólido'], ['escuro', 'Escuro'], ['minimalista', 'Minimalista'], ['onda', 'Onda']] }
+];
+
+function produtoVazio() {
+  return { nome: '', preco: '', unidade: '', de: '', selo: '', moldura: false, arquivo: '', claro: false, fundoBranco: false, transparente: false, foto: '', img: null, miniatura: '' };
+}
+function coresDaPaleta(i) { const { nome, ...c } = PALETAS[i]; return { ...c }; }
+function amanhaIso() { return dataParaIso(somarDias(new Date(), 1)); }
+function hojeIso() { return dataParaIso(new Date()); }
+function estadoPadrao() {
+  return {
+    loja: 'Mercado Vitória', endereco: 'P.A. Nova Grécia', titulo: 'OFERTAS ESPECIAIS',
+    validade: amanhaIso(), obs: '', qtd: 4, prods: Array.from({ length: 6 }, produtoVazio),
+    C: coresDaPaleta(0), fonte: 'moderna', cartao: 'sombra', borda: 4, raio: 40,   // card flutuando, cantos redondos
+    cabecalho: 'classico', rodape: 'solido', preco: 'texto', logo: 'padrao'
+  };
+}
+/* Valida dados salvos (ou de um projeto aberto) e os aplica por cima do
+   padrão, só com valores válidos e dentro dos limites dos campos: um arquivo
+   estranho não quebra o app. Devolve o estado novo, sem tocar no atual. */
+function normalizarDados(d) {
+  const e = estadoPadrao();
+  if (!d || typeof d !== 'object') return e;
+  d = migrarDados(d);
+  for (const k of CAMPOS_TEXTO) if (typeof d[k] === 'string') e[k] = d[k].slice(0, LIMITES[k] || 20);
+  if (!isoValido(e.validade)) e.validade = amanhaIso();
+  if (Number.isInteger(d.qtd) && d.qtd >= 1 && d.qtd <= 6) e.qtd = d.qtd;
+  if (d.C && typeof d.C === 'object') for (const k of Object.keys(e.C)) if (/^#[0-9a-f]{6}$/i.test(d.C[k])) e.C[k] = d.C[k].toLowerCase();
+  for (const est of ESTILOS) if (est.opcoes.some(([v]) => v === d[est.chave])) e[est.chave] = d[est.chave];
+  if (['padrao', 'propria', 'nenhuma'].includes(d.logo)) e.logo = d.logo;
+  if (Array.isArray(d.prods)) d.prods.slice(0, 6).forEach((p, i) => {
+    if (!p || typeof p !== 'object') return;
+    for (const k of ['nome', 'preco', 'de', 'arquivo']) if (typeof p[k] === 'string') e.prods[i][k] = p[k].slice(0, LIMITES[k] || LIMITES.preco);
+    if (UNIDADES.includes(p.unidade)) e.prods[i].unidade = p.unidade;
+    if (SELOS.some(([v]) => v === p.selo)) e.prods[i].selo = p.selo;
+    for (const k of ['moldura', 'claro', 'fundoBranco', 'transparente']) e.prods[i][k] = !!p[k];
+    if (typeof p.foto === 'string' && ID_FOTO.test(p.foto)) e.prods[i].foto = p.foto;
+  });
+  return e;
 }
 /* ══ FIM PURO ══ */
 
@@ -2104,33 +2155,6 @@ function desenharEncarte(g, op = {}) {
 /* ══ ESTADO ═══════════════════════════════════════════════════ */
 const MODO_DEMO = new URLSearchParams(location.search).has('demo');
 const CHAVE_ESTADO = 'artmaker:v1', CHAVE_VISTO = 'artmaker:visto', ESQUEMA = 2;
-const LIMITES = { loja: 40, endereco: 80, titulo: 36, obs: 70, nome: 60, preco: 12, arquivo: 80 };
-const CAMPOS_TEXTO = ['loja', 'endereco', 'titulo', 'validade', 'obs'];
-const CAMPOS_PRODUTO = ['nome', 'preco', 'unidade', 'de', 'selo', 'moldura', 'arquivo', 'claro', 'fundoBranco', 'transparente', 'foto'];
-const ESTILOS = [
-  { chave: 'fonte', titulo: 'Fonte do encarte', grupo: 'Texto', opcoes: [['moderna', 'Moderna'], ['classica', 'Clássica']] },
-  { chave: 'cartao', titulo: 'Aparência do quadro', grupo: 'Quadros dos produtos', opcoes: [['contorno', 'Contorno'], ['sombra', 'Sombra'], ['preenchido', 'Fundo colorido'], ['degrade', 'Degradê']] },
-  { chave: 'borda', titulo: 'Espessura da borda', grupo: 'Quadros dos produtos', num: true, opcoes: [[0, 'Sem borda'], [2, 'Fina'], [4, 'Média'], [6, 'Grossa']] },
-  { chave: 'raio', titulo: 'Cantos', grupo: 'Quadros dos produtos', num: true, opcoes: [[0, 'Retos'], [12, 'Leves'], [24, 'Médios'], [40, 'Redondos']] },
-  { chave: 'preco', titulo: 'Formato do preço', grupo: 'Preço', opcoes: [['texto', 'Texto'], ['etiqueta', 'Etiqueta'], ['circulo', 'Círculo'], ['faixa', 'Faixa']] },
-  { chave: 'cabecalho', titulo: 'Cabeçalho', grupo: 'Cabeçalho e rodapé', opcoes: [['classico', 'Clássico'], ['faixa', 'Com faixa'], ['diagonal', 'Diagonal'], ['minimalista', 'Minimalista']] },
-  { chave: 'rodape', titulo: 'Rodapé', grupo: 'Cabeçalho e rodapé', opcoes: [['solido', 'Sólido'], ['escuro', 'Escuro'], ['minimalista', 'Minimalista'], ['onda', 'Onda']] }
-];
-
-function produtoVazio() {
-  return { nome: '', preco: '', unidade: '', de: '', selo: '', moldura: false, arquivo: '', claro: false, fundoBranco: false, transparente: false, foto: '', img: null, miniatura: '' };
-}
-function coresDaPaleta(i) { const { nome, ...c } = PALETAS[i]; return { ...c }; }
-function amanhaIso() { return dataParaIso(somarDias(new Date(), 1)); }
-function hojeIso() { return dataParaIso(new Date()); }
-function estadoPadrao() {
-  return {
-    loja: 'Mercado Vitória', endereco: 'P.A. Nova Grécia', titulo: 'OFERTAS ESPECIAIS',
-    validade: amanhaIso(), obs: '', qtd: 4, prods: Array.from({ length: 6 }, produtoVazio),
-    C: coresDaPaleta(0), fonte: 'moderna', cartao: 'sombra', borda: 4, raio: 40,   // card flutuando, cantos redondos
-    cabecalho: 'classico', rodape: 'solido', preco: 'texto', logo: 'padrao'
-  };
-}
 let estado = estadoPadrao();
 let logoPadraoImg = null, logoPropria = null;
 
@@ -2138,29 +2162,8 @@ function estadoSemImagens() {
   const { prods, ...resto } = estado;
   return { esquema: ESQUEMA, ...resto, C: { ...resto.C }, prods: prods.map(p => Object.fromEntries(CAMPOS_PRODUTO.map(k => [k, p[k]]))) };
 }
-/* Aplica dados salvos (ou de um projeto aberto) por cima do padrão, só com
-   valores válidos e dentro dos limites dos campos: um arquivo estranho não
-   quebra o app. */
-function aplicarDados(d) {
-  const e = estadoPadrao();
-  if (!d || typeof d !== 'object') { estado = e; return; }
-  d = migrarDados(d);
-  for (const k of CAMPOS_TEXTO) if (typeof d[k] === 'string') e[k] = d[k].slice(0, LIMITES[k] || 20);
-  if (!isoValido(e.validade)) e.validade = amanhaIso();
-  if (Number.isInteger(d.qtd) && d.qtd >= 1 && d.qtd <= 6) e.qtd = d.qtd;
-  if (d.C && typeof d.C === 'object') for (const k of Object.keys(e.C)) if (/^#[0-9a-f]{6}$/i.test(d.C[k])) e.C[k] = d.C[k].toLowerCase();
-  for (const est of ESTILOS) if (est.opcoes.some(([v]) => v === d[est.chave])) e[est.chave] = d[est.chave];
-  if (['padrao', 'propria', 'nenhuma'].includes(d.logo)) e.logo = d.logo;
-  if (Array.isArray(d.prods)) d.prods.slice(0, 6).forEach((p, i) => {
-    if (!p || typeof p !== 'object') return;
-    for (const k of ['nome', 'preco', 'de', 'arquivo']) if (typeof p[k] === 'string') e.prods[i][k] = p[k].slice(0, LIMITES[k] || LIMITES.preco);
-    if (UNIDADES.includes(p.unidade)) e.prods[i].unidade = p.unidade;
-    if (SELOS.some(([v]) => v === p.selo)) e.prods[i].selo = p.selo;
-    for (const k of ['moldura', 'claro', 'fundoBranco', 'transparente']) e.prods[i][k] = !!p[k];
-    if (typeof p.foto === 'string' && ID_FOTO.test(p.foto)) e.prods[i].foto = p.foto;
-  });
-  estado = e;
-}
+/* Aplica dados salvos ou de um projeto aberto (a validação é normalizarDados) */
+function aplicarDados(d) { estado = normalizarDados(d); }
 
 /* ══ SALVAMENTO (localStorage para dados, IndexedDB para fotos) ══ */
 let tSalvar = 0, avisouArmazenamento = false, fotosProntas = false;
