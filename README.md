@@ -98,8 +98,9 @@ Taken from the demo mode.
 - Nothing overflows: titles, names and addresses shrink to fit and, at
   the limit, end with an ellipsis; a number and its unit ("500 g") never
   split across lines.
-- Names and prices share the same size across each row of product boxes,
-  and the photos line up.
+- Names and prices share the same size across each row of product boxes
+  (in fact across all boxes of the same shape), and the photos line up.
+  A very long name can come out a little smaller than the others.
 - Automatic contrast: if a color combination would make text
   unreadable, the shade is darkened or lightened just enough, without
   changing the chosen color. The Colors tab says when this happens.
@@ -221,7 +222,8 @@ node --test
 index.html            the whole app: interface, flyer drawing and the default logo
 404.html              not-found page
 tests/
-  puro.test.mjs       tests for the pure functions in index.html
+  puro.test.mjs       tests for the pure functions in index.html and for the checks on saved
+                      and opened projects
   csp.test.mjs        checks that the security policy allows exactly the page's scripts
 .github/workflows/
   testes.yml          runs the tests on every push

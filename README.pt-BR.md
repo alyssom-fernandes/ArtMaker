@@ -96,8 +96,9 @@ Capturadas do modo demonstração.
 - Nada estoura: títulos, nomes e endereços diminuem até caber e, no
   limite, terminam em reticências; número e unidade ("500 g") não se
   separam na quebra de linha.
-- Nome e preço têm o mesmo tamanho em toda a linha de quadros, e as fotos
-  ficam alinhadas.
+- Nome e preço têm o mesmo tamanho em toda a linha de quadros (na verdade,
+  em todos os quadros de mesmo formato), e as fotos ficam alinhadas. Um
+  nome muito longo pode sair um pouco menor que os outros.
 - Contraste automático: se uma combinação de cores deixaria o texto
   ilegível, o tom é escurecido ou clareado só o necessário, sem trocar a
   cor escolhida. A aba Cores avisa quando isso acontece.
@@ -216,7 +217,8 @@ node --test
 index.html            o app inteiro: interface, desenho do encarte e a logo padrão
 404.html              página de endereço não encontrado
 tests/
-  puro.test.mjs       testes das funções puras do index.html
+  puro.test.mjs       testes das funções puras do index.html e da validação de projetos
+                      salvos ou abertos
   csp.test.mjs        confere que a política de segurança libera só os scripts da página
 .github/workflows/
   testes.yml          roda os testes a cada envio
