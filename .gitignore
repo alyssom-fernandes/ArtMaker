@@ -16,3 +16,6 @@ desktop.ini
 # Imagens de trabalho: fotos de teste e o mockup (não fazem parte do app;
 # as imagens do README ficam em docs/telas)
 Artes/
+
+# Dependências
+node_modules/
