@@ -31,6 +31,8 @@ is in Portuguese.
 
 This README is also available in [Portuguese](README.pt-BR.md).
 
+**Case study:** [how it was built and why, with links to the code](https://alyssom-fernandes.github.io/portfolio/en/projetos/artmaker/) on my portfolio.
+
 ## In 30 seconds
 
 1. Open the [demo](https://alyssom-fernandes.github.io/ArtMaker/?demo=1).
