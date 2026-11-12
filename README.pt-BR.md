@@ -30,6 +30,8 @@ quem usa; da internet vêm só as fontes, do Google Fonts.
 
 Este README também está em [inglês](README.md).
 
+**Estudo de caso:** [como foi construído e por quê, com links para o código](https://alyssom-fernandes.github.io/portfolio/projetos/artmaker/) no meu portfólio.
+
 ## Em 30 segundos
 
 1. Abra a [demonstração](https://alyssom-fernandes.github.io/ArtMaker/?demo=1).
